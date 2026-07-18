@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>antetai — The Anticipation Engine | See through text before it affects you</title>
+<meta name="description" content="6-layer AI engine that stamps truth on text. TVE detection + UKBE resonance + amidor verification. ScamShield, 6-pillar analysis, multi-perspective WEAC, live engine monitor.">
+<meta property="og:title" content="antetai — The Anticipation Engine">
+<meta property="og:description" content="See through text before it affects you. 6 analysis layers, resonance-verified, entropy-sealed.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://antetai.com">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔏</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#040608;--surface:#0a0d12;--card:#0f1319;--border:#1a1f2d;
+  --text:#d8e2f0;--muted:#6b7a94;
+  --crt:#00ff41;--crt-dim:#00b32d;--crt-line:#004d00;
+  --accent:#00e676;--accent2:#69f0ae;
+  --blue:#42a5f5;--rose:#ff5252;--amber:#ffab40;--violet:#b388ff;--teal:#26c6da;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,Consolas,'Courier New',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-glow .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.07;animation:drift 30s ease-in-out infinite;will-change:transform;contain:strict}
+.bg-glow .orb:nth-child(1){width:400px;height:400px;background:#00ff41;top:-5%;left:20%;animation-delay:0s}
+.bg-glow .orb:nth-child(2){width:350px;height:350px;background:#42a5f5;bottom:20%;right:10%;animation-delay:-10s}
+.bg-glow .orb:nth-child(3){width:300px;height:300px;background:#ff5252;top:60%;left:50%;animation-delay:-20s}
+@keyframes drift{0%,100%{transform:translate(0,0)}33%{transform:translate(20px,-30px)}66%{transform:translate(-15px,20px)}}
+
+.container{max-width:1100px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+nav{padding:16px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo{font-size:1.5rem;font-weight:900;color:var(--crt);font-family:var(--mono);letter-spacing:.08em}
+.logo span{color:var(--muted);font-weight:400}
+.nav-links{display:flex;gap:18px;align-items:center}
+.nav-links a{color:var(--muted);font-size:.88rem;transition:color .2s}
+.nav-links a:hover{color:var(--crt);text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:10px;font-weight:700;font-size:.92rem;border:none;cursor:pointer;transition:all .2s}
+.btn-crt{background:var(--crt);color:#000;font-family:var(--mono)}
+.btn-crt:hover{box-shadow:0 0 30px rgba(0,255,65,.25);transform:translateY(-2px)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--crt);color:var(--crt)}
+
+.hero{padding:80px 0 40px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;background:var(--card);border:1px solid var(--crt-line);font-size:.78rem;color:var(--crt);font-family:var(--mono)}
+.hero-badge .pulse{width:8px;height:8px;border-radius:50%;background:var(--crt);animation:blink 1.4s step-start infinite}
+@keyframes blink{50%{opacity:.2}}
+.hero h1{font-size:clamp(2.4rem,5.5vw,4rem);font-weight:900;line-height:1.08;margin:24px 0 20px;font-family:var(--mono);letter-spacing:-.02em}
+.hero h1 .gr{background:linear-gradient(135deg,var(--crt),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.1rem;color:var(--muted);max-width:620px;margin:0 auto 28px}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+.stamp{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin:40px auto 0;max-width:700px}
+.stamp-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-family:var(--mono);font-size:.75rem;color:var(--crt)}
+.stamp-head .seal{font-size:1.2rem}
+.stamp-layers{display:flex;flex-direction:column;gap:4px}
+.stamp-layer{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:8px;font-size:.82rem;transition:background .2s}
+.stamp-layer:hover{background:rgba(0,255,65,.04)}
+.layer-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#000;font-family:var(--mono);flex-shrink:0}
+.layer-name{font-weight:700;min-width:120px}
+.layer-desc{color:var(--muted);flex:1}
+.layer-status{font-family:var(--mono);font-size:.75rem;font-weight:700}
+
+.section{padding:70px 0}
+.section-title{text-align:center;font-size:1.8rem;font-weight:800;margin-bottom:10px}
+.section-sub{text-align:center;color:var(--muted);max-width:560px;margin:0 auto 40px}
+
+.layers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.layer-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 20px;transition:transform .2s,border-color .2s}
+.layer-card:hover{transform:translateY(-3px);border-color:var(--crt-dim)}
+.layer-card h3{font-size:1rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.layer-card .tag{font-size:.65rem;font-family:var(--mono);padding:2px 8px;border-radius:4px;font-weight:700}
+.layer-card p{color:var(--muted);font-size:.85rem;margin-bottom:8px}
+.layer-card ul{list-style:none;padding:0}
+.layer-card li{font-size:.8rem;color:var(--muted);padding:2px 0 2px 14px;position:relative}
+.layer-card li::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%}
+
+.monitor-section{background:var(--surface);border:1px solid var(--crt-line);border-radius:16px;padding:28px;margin-top:20px}
+.monitor-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.monitor-head h3{font-family:var(--mono);color:var(--crt);font-size:1rem}
+.monitor-head .live{font-size:.7rem;padding:3px 10px;border-radius:100px;background:rgba(0,255,65,.12);color:var(--crt);font-family:var(--mono);font-weight:700;animation:blink 1.4s step-start infinite}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.kpi{border:1px solid var(--crt-line);border-radius:10px;padding:12px;text-align:center;background:rgba(0,255,65,.02)}
+.kpi .lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--crt-dim);font-family:var(--mono)}
+.kpi .val{font-size:1.3rem;font-weight:700;color:var(--crt);font-family:var(--mono);margin-top:4px}
+.kpi .bar{height:4px;background:var(--crt-line);border-radius:2px;margin-top:6px;overflow:hidden}
+.kpi .bar i{display:block;height:100%;background:var(--crt);border-radius:2px;transition:width .5s}
+
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;max-width:750px;margin:0 auto}
+.plan{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px 24px;position:relative;transition:transform .2s}
+.plan:hover{transform:translateY(-3px)}
+.plan.pop{border-color:var(--crt);box-shadow:0 0 40px rgba(0,255,65,.08)}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--crt);color:#000;font-size:.72rem;font-weight:800;padding:4px 16px;border-radius:100px;font-family:var(--mono)}
+.plan h3{font-size:1.2rem;margin-bottom:4px}
+.plan .price{font-size:2.6rem;font-weight:900;margin:12px 0 4px;font-family:var(--mono)}
+.plan .price span{font-size:.9rem;font-weight:400;color:var(--muted)}
+.plan .period{color:var(--muted);font-size:.82rem;margin-bottom:20px}
+.plan ul{list-style:none;margin-bottom:24px}
+.plan li{padding:6px 0;font-size:.88rem;color:var(--muted);display:flex;gap:8px}
+.plan li::before{content:"✓";color:var(--crt);font-weight:700;flex-shrink:0}
+.plan .btn{width:100%;justify-content:center}
+
+.chat-section{background:var(--surface);border-radius:16px;padding:36px 28px}
+.chat-container{max-width:600px;margin:0 auto}
+.chat-messages{min-height:100px;max-height:320px;overflow-y:auto;margin-bottom:14px}
+.chat-bubble{padding:12px 16px;border-radius:14px;margin-bottom:8px;font-size:.9rem;max-width:85%;animation:fadeIn .3s ease}
+.chat-bubble.user{background:rgba(0,255,65,.1);border:1px solid var(--crt-line);margin-left:auto;text-align:right}
+.chat-bubble.bot{background:var(--card);border:1px solid var(--border)}
+.chat-bubble .meta{font-size:.68rem;color:var(--muted);margin-top:5px}
+.chat-input-row{display:flex;gap:8px}
+.chat-input-row textarea{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:.88rem;outline:none;font-family:var(--font);resize:vertical;min-height:44px;max-height:200px}
+.chat-input-row textarea:focus{border-color:var(--crt)}
+.chat-input-row button{padding:12px 20px;border-radius:10px}
+.chat-status{font-size:.72rem;color:var(--muted);margin-top:8px;text-align:center}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.compliance{background:var(--surface);border-radius:16px;padding:36px 28px;margin-top:32px}
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.comp-item h3{font-size:.95rem;margin-bottom:6px;display:flex;gap:6px}
+.comp-item p{color:var(--muted);font-size:.82rem;line-height:1.7}
+
+footer{padding:40px 0 28px;border-top:1px solid var(--border);margin-top:60px}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px;margin-bottom:24px}
+.footer-col h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--crt-dim);margin-bottom:10px;font-family:var(--mono)}
+.footer-col a{display:block;color:var(--muted);font-size:.82rem;padding:3px 0}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{text-align:center;color:var(--muted);font-size:.75rem;padding-top:20px;border-top:1px solid var(--border)}
+
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:16px 20px;z-index:1000;display:none;animation:slideUp .3s}
+.cookie-banner.show{display:block}
+.cookie-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.cookie-text{flex:1;min-width:280px;font-size:.82rem;color:var(--muted)}
+.cookie-btns{display:flex;gap:8px}
+.cookie-btns button{padding:7px 18px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;border:none}
+.cookie-accept{background:var(--crt);color:#000}
+.cookie-reject{background:var(--card);color:var(--text);border:1px solid var(--border)!important}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;max-width:700px;width:100%;max-height:80vh;overflow-y:auto;padding:32px}
+.modal h2{font-size:1.4rem;margin-bottom:16px}
+.modal h3{font-size:1rem;margin:16px 0 6px;color:var(--crt)}
+.modal p,.modal li{font-size:.85rem;color:var(--muted);line-height:1.7}
+.modal ul{padding-left:18px}
+.modal-close{position:sticky;top:0;float:right;background:var(--card);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+@media(max-width:768px){
+  .hero{padding:50px 0 30px}
+  .section{padding:50px 0}
+  .layers-grid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  nav{padding:10px 0}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+
+<div class="container">
+  <nav>
+    <div class="logo">🔏 antetai<span>.com</span></div>
+    <div class="nav-links">
+      <a href="#layers" data-i18n="nav_layers">Layers</a>
+      <a href="#monitor" data-i18n="nav_monitor">Monitor</a>
+      <a href="#pricing" data-i18n="nav_pricing">Pricing</a>
+      <a href="#" onclick="openModal('privacy');return false" data-i18n="nav_privacy">Privacy</a>
+      <button class="btn btn-crt" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})" data-i18n="nav_cta">Stamp text</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge"><span class="pulse"></span> 3 engines · 6 layers · resonance-verified</div>
+    <h1><span class="gr" data-i18n="hero_line1">See through text</span><br><span data-i18n="hero_line2">before it affects you</span></h1>
+    <p data-i18n="tagline">antetai stamps truth on text. 6 analysis layers detect manipulation, measure coordination via Kuramoto resonance, verify through multi-perspective consensus, and seal with entropy valve. Not just detection — anticipation.</p>
+    <div class="hero-cta">
+      <button class="btn btn-crt" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})" data-i18n="hero_cta1">Stamp text free</button>
+      <button class="btn btn-outline" onclick="document.getElementById('layers').scrollIntoView({behavior:'smooth'})" data-i18n="hero_cta2">See the 6 layers</button>
+    </div>
+
+    <div class="stamp">
+      <div class="stamp-head"><span class="seal">🔏</span> ANTETAI STAMP — example analysis result</div>
+      <div class="stamp-layers">
+        <div class="stamp-layer"><div class="layer-num" style="background:var(--crt)">L0</div><span class="layer-name">ScamShield</span><span class="layer-desc">fast-path scam detection</span><span class="layer-status" style="color:var(--crt)">CLEAN</span></div>
+        <div class="stamp-layer"><div class="layer-num" style="background:var(--blue)">L1</div><span class="layer-name">RegisterGate</span><span class="layer-desc">REAI coherence check</span><span class="layer-status" style="color:var(--blue)">AFFIRM</span></div>
+        <div class="stamp-layer"><div class="layer-num" style="background:var(--violet)">L2</div><span class="layer-name">TVE 6-pillar</span><span class="layer-desc">6 signals across 3 pillars</span><span class="layer-status" style="color:var(--rose)">28.3%</span></div>
+        <div class="stamp-layer"><div class="layer-num" style="background:var(--amber)">L3</div><span class="layer-name">UKBE Resonance</span><span class="layer-desc">Kuramoto coordination</span><span class="layer-status" style="color:var(--amber)">72.3%</span></div>
+        <div class="stamp-layer"><div class="layer-num" style="background:var(--rose)">L4</div><span class="layer-name">WEAC Consensus</span><span class="layer-desc">multi-perspective agreement</span><span class="layer-status" style="color:var(--crt)">C=0.95</span></div>
+        <div class="stamp-layer"><div class="layer-num" style="background:var(--teal)">L5</div><span class="layer-name">Entropy Valve</span><span class="layer-desc">confidence seal</span><span class="layer-status" style="color:var(--teal)">SEALED</span></div>
+      </div>
+      <div style="text-align:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <span style="font-family:var(--mono);font-size:1.6rem;font-weight:900;color:var(--rose)">36.2%</span>
+        <span style="font-size:.8rem;color:var(--muted);margin-left:8px">VERDICT: ATENȚIE — manipulare coordonată, strategie: emotional_attack</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="layers">
+    <h2 class="section-title" data-i18n="layers_h2">The 6 analysis layers</h2>
+    <p class="section-sub" data-i18n="layers_sub">Each layer adds a dimension previous engines cannot see alone. Together, they create the antetai stamp.</p>
+    <div class="layers-grid">
+      <div class="layer-card">
+        <h3>🛡️ L0 — ScamShield <span class="tag" style="background:rgba(0,255,65,.12);color:var(--crt)">amidor</span></h3>
+        <p data-i18n="l0_p">Fast-path scam interception. Catches fraud BEFORE full analysis runs. Protects the vulnerable.</p>
+        <ul>
+          <li style="--dot:var(--crt)" data-i18n="l0_a">OTP/card code requests</li>
+          <li data-i18n="l0_b">False authority (bank/police/ANAF)</li>
+          <li data-i18n="l0_c">Relative-in-crisis patterns</li>
+          <li data-i18n="l0_d">Urgency + secrecy combination</li>
+        </ul>
+      </div>
+      <div class="layer-card">
+        <h3>🔄 L1 — RegisterGate <span class="tag" style="background:rgba(66,165,245,.12);color:var(--blue)">UKBE</span></h3>
+        <p data-i18n="l1_p">REAI equations decide if text deserves full analysis. Saves compute, filters noise.</p>
+        <ul>
+          <li data-i18n="l1_a">AFFIRM — proceed to full analysis</li>
+          <li data-i18n="l1_b">ASK — request clarification first</li>
+          <li data-i18n="l1_c">REANCHOR — re-establish context</li>
+          <li data-i18n="l1_d">Adler-calibrated beta_min</li>
+        </ul>
+      </div>
+      <div class="layer-card">
+        <h3>🔬 L2 — TVE 6-pillar <span class="tag" style="background:rgba(179,136,255,.12);color:var(--violet)">TVE</span></h3>
+        <p data-i18n="l2_p">Six independent analysis dimensions: semantics, intent, emotion, disinfo, logic, context.</p>
+        <ul>
+          <li data-i18n="l2_a">Euphemisms, hedging, presuppositions</li>
+          <li data-i18n="l2_b">Hidden sales, forced reciprocity</li>
+          <li data-i18n="l2_c">Fear, guilt, flattery, urgency</li>
+          <li data-i18n="l2_d">Contradictions, cherry-picking</li>
+        </ul>
+      </div>
+      <div class="layer-card">
+        <h3>📡 L3 — UKBE Resonance <span class="tag" style="background:rgba(255,171,64,.12);color:var(--amber)">UKBE</span></h3>
+        <p data-i18n="l3_p">Kuramoto oscillators measure if manipulation is coordinated (sophisticated) or accidental.</p>
+        <ul>
+          <li data-i18n="l3_a">Coordination score (Phi_intern)</li>
+          <li data-i18n="l3_b">Manipulation entropy measurement</li>
+          <li data-i18n="l3_c">Strategy identification</li>
+          <li data-i18n="l3_d">Lock ratio of pillar oscillators</li>
+        </ul>
+      </div>
+      <div class="layer-card">
+        <h3>🤝 L4 — WEAC Consensus <span class="tag" style="background:rgba(255,82,82,.12);color:var(--rose)">amidor</span></h3>
+        <p data-i18n="l4_p">4 analysis perspectives (balanced, emotional, factual, social) cross-verify via weighted ensemble.</p>
+        <ul>
+          <li data-i18n="l4_a">Weighted Agreement Coherence formula</li>
+          <li data-i18n="l4_b">Perspective divergence detection</li>
+          <li data-i18n="l4_c">Numeric conflict hard rule</li>
+          <li data-i18n="l4_d">Honest abstention when unsure</li>
+        </ul>
+      </div>
+      <div class="layer-card">
+        <h3>🔏 L5 — Entropy Valve <span class="tag" style="background:rgba(38,198,218,.12);color:var(--teal)">UKBE</span></h3>
+        <p data-i18n="l5_p">KL divergence safety hierarchy seals the stamp. Blocks uncertain verdicts.</p>
+        <ul>
+          <li data-i18n="l5_a">Normal → Safe Mode → Human Approval</li>
+          <li data-i18n="l5_b">Cold Shutdown for critical drift</li>
+          <li data-i18n="l5_c">Entropy threshold H &lt; 0.3</li>
+          <li data-i18n="l5_d">Tamper-proof notarization ready</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="monitor">
+    <h2 class="section-title" data-i18n="mon_h2">Live engine monitor</h2>
+    <p class="section-sub" data-i18n="mon_sub">Real state from the REAI engine. Kuramoto oscillators, Kalman filter, adaptive alpha/beta — live.</p>
+    <div class="monitor-section">
+      <div class="monitor-head">
+        <h3>REAI Engine</h3>
+        <span class="live">● LIVE</span>
+        <span style="margin-left:auto;font-size:.75rem;color:var(--crt-dim);font-family:var(--mono)">ScaleEngine O(N) · <span id="mon-n">10,000</span> oscillators</span>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><div class="lbl">RSI</div><div class="val" id="mon-rsi">0.9847</div><div class="bar"><i id="bar-rsi" style="width:98%"></i></div></div>
+        <div class="kpi"><div class="lbl">α (intern)</div><div class="val" id="mon-alpha">0.8153</div><div class="bar"><i id="bar-alpha" style="width:82%"></i></div></div>
+        <div class="kpi"><div class="lbl">H (entropie)</div><div class="val" id="mon-h">0.0421</div><div class="bar"><i id="bar-h" style="width:4%"></i></div></div>
+        <div class="kpi"><div class="lbl">Locked</div><div class="val" id="mon-lock">96.7%</div><div class="bar"><i id="bar-lock" style="width:97%"></i></div></div>
+        <div class="kpi"><div class="lbl">Φ_extern</div><div class="val" id="mon-phiext">0.9912</div><div class="bar"><i id="bar-phiext" style="width:99%"></i></div></div>
+        <div class="kpi"><div class="lbl">β_min</div><div class="val" id="mon-betamin">0.1900</div></div>
+      </div>
+      <div style="text-align:center;margin-top:12px;font-size:.7rem;color:var(--crt-dim);font-family:var(--mono)">
+        simulated · full monitor with NDA access at <a href="mailto:hello@antetai.com" style="color:var(--crt)">hello@antetai.com</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <h2 class="section-title" data-i18n="price_h2">Pricing</h2>
+    <p class="section-sub" data-i18n="price_sub">Start free. Full stamp for Pro.</p>
+    <div class="pricing-grid">
+      <div class="plan">
+        <h3 data-i18n="plan_free">Free</h3>
+        <div class="price">€0 <span data-i18n="plan_forever">forever</span></div>
+        <div class="period" data-i18n="plan_nocard">No credit card needed</div>
+        <ul>
+          <li data-i18n="f1">5 stamps per day</li>
+          <li data-i18n="f2">All 6 layers active</li>
+          <li data-i18n="f3">ScamShield protection</li>
+          <li data-i18n="f4">RO + EN analysis</li>
+          <li data-i18n="f5">No account required</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})" data-i18n="plan_start">Start free</button>
+      </div>
+      <div class="plan pop">
+        <div class="plan-badge" data-i18n="plan_badge">FULL STAMP</div>
+        <h3>Pro</h3>
+        <div class="price">€14.99 <span>/month</span></div>
+        <div class="period" data-i18n="plan_cancel">Cancel anytime · VAT included</div>
+        <ul>
+          <li data-i18n="pro1">Unlimited stamps</li>
+          <li data-i18n="pro2">All 6 layers + full report</li>
+          <li data-i18n="pro3">Multi-perspective breakdown</li>
+          <li data-i18n="pro4">Strategy identification</li>
+          <li data-i18n="pro5">Batch analysis</li>
+          <li data-i18n="pro6">Export (PDF/JSON)</li>
+          <li data-i18n="pro7">Live monitor access</li>
+          <li data-i18n="pro8">Priority processing</li>
+        </ul>
+        <button class="btn btn-crt" id="proBuyBtn" onclick="handleProPurchase()" data-i18n="upgrade">Upgrade to Pro — €14.99/mo</button>
+      </div>
+    </div>
+
+    <div class="compliance" style="margin-top:32px">
+      <div class="comp-grid">
+        <div class="comp-item">
+          <h3>🇪🇺 EU AI Act</h3>
+          <p data-i18n="comp_ai">Limited-risk AI system. Art. 50 transparency: models disclosed (Grok + DeepSeek dual engine), limitations stated (heuristic v0). <a href="#" onclick="openModal('ai-act');return false">Full transparency →</a></p>
+        </div>
+        <div class="comp-item">
+          <h3>🔒 GDPR</h3>
+          <p data-i18n="comp_gdpr">Text processed real-time, NOT stored. Payments via Stripe (PCI-DSS L1). <a href="#" onclick="openModal('privacy');return false">Privacy policy →</a></p>
+        </div>
+        <div class="comp-item">
+          <h3>🔏 Honest stamps</h3>
+          <p data-i18n="comp_honest">antetai stamps are ADVISORY. Signals indicate potential manipulation, not confirmation. The final interpretation belongs to the reader. Every stamp declares its confidence level.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="chat">
+    <h2 class="section-title" data-i18n="chat_h2">Stamp text now</h2>
+    <p class="section-sub" data-i18n="chat_sub">Paste any text — email, article, message, contract. Get the full 6-layer stamp.</p>
+    <div class="chat-section">
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-bubble bot">
+            🔏 Welcome to antetai — The Anticipation Engine. Paste any text and I'll run all 6 layers: ScamShield → RegisterGate → TVE 6-pillar → UKBE Resonance → WEAC Consensus → Entropy Valve. You'll get a full stamp with coordination score, strategy identification, and confidence level.
+            <div class="meta">🤖 AI-generated · system</div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <textarea id="chatInput" rows="2" data-i18n="placeholder" placeholder="Paste text to stamp for manipulation analysis..." maxlength="5000"></textarea>
+          <button class="btn btn-crt" id="chatSendBtn" onclick="sendChat()">🔏</button>
+        </div>
+        <p class="chat-status" id="chatStatus"></p>
+        <p style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:10px">
+          🤖 AI-generated · Advisory stamps · <a href="#" onclick="openModal('ai-act');return false">AI transparency</a> · <a href="#" onclick="openModal('privacy');return false">Privacy</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col"><h4>Product</h4><a href="#layers">6 Layers</a><a href="#monitor">Monitor</a><a href="#pricing">Pricing</a><a href="#chat">Try free</a></div>
+      <div class="footer-col"><h4>Engines</h4><a href="https://amipecetai.com">TVE Core (amipecetai)</a><a href="#">UKBE Core (AGPL)</a><a href="#">amidor engine</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="#" onclick="openModal('privacy');return false">Privacy</a><a href="#" onclick="openModal('terms');return false">Terms</a><a href="#" onclick="openModal('ai-act');return false">AI Transparency</a><a href="#" onclick="openModal('imprint');return false">Imprint</a></div>
+      <div class="footer-col"><h4>Contact</h4><a href="mailto:hello@antetai.com">hello@antetai.com</a><a href="mailto:privacy@antetai.com">privacy@antetai.com</a></div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 antetai — The Anticipation Engine · part of amiecosystems · AGPL-3.0 / commercial<br>
+      3 engines, 6 layers, 1 stamp of truth. Made with 🔏 in Brăila, Romania.
+    </div>
+  </footer>
+</div>
+
+<div class="cookie-banner" id="cookieBanner"><div class="cookie-inner"><div class="cookie-text">Essential cookies only (session, consent). No tracking. <a href="#" onclick="openModal('privacy');return false">Privacy Policy</a></div><div class="cookie-btns"><button class="cookie-reject" onclick="cookieConsent(false)">Reject</button><button class="cookie-accept" onclick="cookieConsent(true)">Accept essential</button></div></div></div>
+
+<div class="modal-overlay" id="modal-privacy"><div class="modal"><button class="modal-close" onclick="closeModal('privacy')">✕</button><h2>Privacy Policy</h2><p><strong>Last updated:</strong> July 2026 · <strong>Controller:</strong> antetai, Brăila, Romania · <strong>Contact:</strong> privacy@antetai.com</p><h3>1. Data processing</h3><ul><li><strong>Text submitted:</strong> Processed real-time by AI engines. NOT stored on our servers.</li><li><strong>IP address:</strong> Rate limiting only. Not logged beyond session.</li><li><strong>Payments (Pro):</strong> Exclusively by Stripe (PCI-DSS L1).</li></ul><h3>2. Legal basis (GDPR Art. 6)</h3><ul><li>Contract performance (Art. 6(1)(b)): Text analysis</li><li>Legitimate interest (Art. 6(1)(f)): Rate limiting, security</li></ul><h3>3. Text privacy</h3><p><strong>We do NOT store your text.</strong> Text is sent to AI engines for analysis and discarded immediately.</p><h3>4. Your rights (Art. 15-22)</h3><p>Access, Rectification, Erasure, Restriction, Portability, Objection. Email <a href="mailto:privacy@antetai.com">privacy@antetai.com</a>. 30-day response.</p></div></div>
+
+<div class="modal-overlay" id="modal-terms"><div class="modal"><button class="modal-close" onclick="closeModal('terms')">✕</button><h2>Terms of Service</h2><h3>1. Service</h3><p>antetai is an AI-powered text analysis platform using 3 fused engines (TVE + UKBE + amidor) across 6 analysis layers.</p><h3>2. Advisory stamps</h3><p><strong>antetai provides advisory analysis, NOT factual verification.</strong> Stamps indicate potential manipulation, not confirmation.</p><h3>3. Subscriptions</h3><ul><li>Free: 5 stamps/day</li><li>Pro: €14.99/month (VAT included), via Stripe</li><li>14-day cooling-off per EU Consumer Rights Directive</li></ul><h3>4. Law</h3><p>Romanian law. Courts of Brăila.</p></div></div>
+
+<div class="modal-overlay" id="modal-ai-act"><div class="modal"><button class="modal-close" onclick="closeModal('ai-act')">✕</button><h2>AI System Transparency</h2><p><strong>Per EU AI Act (Reg. 2024/1689), Article 50</strong></p><h3>System</h3><ul><li><strong>Name:</strong> antetai — The Anticipation Engine</li><li><strong>Risk:</strong> Limited-risk (transparency obligations)</li><li><strong>Purpose:</strong> Multi-layer AI detection of manipulation, coordination, and deception in text</li></ul><h3>Engines</h3><ul><li><strong>TVE Core:</strong> 6-pillar heuristic text analysis (regex + wordlist, v0)</li><li><strong>UKBE Core:</strong> Kuramoto resonance, Kalman filter, entropy valve (REAI framework)</li><li><strong>amidor:</strong> Concordance, WEAC ensemble, ScamShield, RegisterGate</li><li><strong>AI models:</strong> Grok (xAI) + DeepSeek, dual-engine anti-confabulation</li></ul><h3>Limitations</h3><ul><li>Heuristic v0 — pattern-based, not NLP-validated</li><li>May produce false positives</li><li>Languages: RO + EN in v0</li><li>NOT a substitute for professional analysis</li></ul></div></div>
+
+<div class="modal-overlay" id="modal-imprint"><div class="modal"><button class="modal-close" onclick="closeModal('imprint')">✕</button><h2>Imprint</h2><p><strong>Provider:</strong> antetai — The Anticipation Engine</p><p><strong>Representative:</strong> Mihai Roșca</p><p><strong>Address:</strong> Spiru Haret, Brăila, Romania</p><p><strong>Email:</strong> <a href="mailto:hello@antetai.com">hello@antetai.com</a></p></div></div>
+
+<script>
+const CONSENT_KEY='antetai_consent';
+function cookieConsent(a){localStorage.setItem(CONSENT_KEY,a?'essential':'rejected');document.getElementById('cookieBanner').classList.remove('show')}
+if(!localStorage.getItem(CONSENT_KEY))setTimeout(()=>document.getElementById('cookieBanner').classList.add('show'),1500);
+function openModal(n){document.getElementById('modal-'+n).classList.add('show')}
+function closeModal(n){document.getElementById('modal-'+n).classList.remove('show')}
+document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show')})});
+
+// Monitor simulation
+(function(){
+  const els={rsi:'mon-rsi',alpha:'mon-alpha',h:'mon-h',lock:'mon-lock',phiext:'mon-phiext'};
+  const bars={rsi:'bar-rsi',alpha:'bar-alpha',h:'bar-h',lock:'bar-lock',phiext:'bar-phiext'};
+  let t=0;
+  function tick(){
+    t+=0.02;
+    const rsi=0.95+0.04*Math.sin(t*0.3);
+    const alpha=rsi;
+    const h=1-rsi+0.01*Math.sin(t*0.7);
+    const lock=95+4*Math.sin(t*0.2);
+    const phiext=0.98+0.015*Math.cos(t*0.5);
+    document.getElementById(els.rsi).textContent=rsi.toFixed(4);
+    document.getElementById(els.alpha).textContent=alpha.toFixed(4);
+    document.getElementById(els.h).textContent=Math.max(0,h).toFixed(4);
+    document.getElementById(els.lock).textContent=lock.toFixed(1)+'%';
+    document.getElementById(els.phiext).textContent=phiext.toFixed(4);
+    document.getElementById(bars.rsi).style.width=(rsi*100)+'%';
+    document.getElementById(bars.alpha).style.width=(alpha*100)+'%';
+    document.getElementById(bars.h).style.width=Math.max(0,h*100)+'%';
+    document.getElementById(bars.lock).style.width=lock+'%';
+    document.getElementById(bars.phiext).style.width=(phiext*100)+'%';
+  }
+  setInterval(tick,500);
+})();
+
+// Chat
+const API_BASE='https://antetai-api-production.up.railway.app';
+let busy=false;
+function addBubble(t,type,meta){const d=document.createElement('div');d.className='chat-bubble '+type;d.innerHTML=t.replace(/\n/g,'<br>');if(meta)d.innerHTML+='<div class="meta">'+meta+'</div>';document.getElementById('chatMessages').appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'})}
+async function sendChat(){if(busy)return;const inp=document.getElementById('chatInput');const msg=inp.value.trim();if(!msg)return;busy=true;inp.value='';addBubble(msg,'user');document.getElementById('chatStatus').textContent='🔏 Running 6 layers...';document.getElementById('chatSendBtn').disabled=true;try{const r=await fetch(API_BASE+'/companion/antetai/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,locale:'en'})});const d=await r.json();addBubble(d.response,'bot','🤖 AI-generated · '+d.engine+' · '+d.decision+' · '+d.latency_s+'s')}catch(e){addBubble('Connection error — API is being deployed. Contact hello@antetai.com','bot','⚠️')}finally{busy=false;document.getElementById('chatStatus').textContent='';document.getElementById('chatSendBtn').disabled=false}}
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}});
+
+async function handleProPurchase(){const btn=document.getElementById('proBuyBtn');btn.textContent='Redirecting...';btn.disabled=true;try{const r=await fetch(API_BASE+'/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'}});const d=await r.json();if(d.url)window.location.href=d.url;else throw 0}catch{btn.textContent='Upgrade to Pro — €14.99/mo';btn.disabled=false;alert('Payment being configured. Contact hello@antetai.com')}}
+
+// i18n
+const T={"tagline":{"en":"antetai stamps truth on text. 6 analysis layers detect manipulation, measure coordination via Kuramoto resonance, verify through multi-perspective consensus, and seal with entropy valve. Not just detection — anticipation.","ro":"antetai ștampilează adevărul pe text. 6 straturi de analiză detectează manipularea, măsoară coordonarea prin rezonanță Kuramoto, verifică prin consens multi-perspectivă și sigilează cu valva de entropie. Nu doar detecție — anticipare."},"hero_line1":{"en":"See through text","ro":"Vezi prin text"},"hero_line2":{"en":"before it affects you","ro":"înainte să te afecteze"},"layers_h2":{"en":"The 6 analysis layers","ro":"Cele 6 straturi de analiză"},"layers_sub":{"en":"Each layer adds a dimension previous engines cannot see alone. Together, they create the antetai stamp.","ro":"Fiecare strat adaugă o dimensiune pe care motoarele anterioare nu o văd singure. Împreună, creează ștampila antetai."},"mon_h2":{"en":"Live engine monitor","ro":"Monitor motor live"},"mon_sub":{"en":"Real state from the REAI engine. Kuramoto oscillators, Kalman filter, adaptive alpha/beta — live.","ro":"Stare reală din motorul REAI. Oscilatori Kuramoto, filtru Kalman, alpha/beta adaptiv — live."},"price_h2":{"en":"Pricing","ro":"Prețuri"},"price_sub":{"en":"Start free. Full stamp for Pro.","ro":"Începe gratuit. Ștampila completă la Pro."},"chat_h2":{"en":"Stamp text now","ro":"Ștampilează text acum"},"chat_sub":{"en":"Paste any text — email, article, message, contract. Get the full 6-layer stamp.","ro":"Lipește orice text — email, articol, mesaj, contract. Primești ștampila completă pe 6 straturi."}};
+let lang=localStorage.getItem('antetai_lang')||'en';
+function switchLang(l){lang=l;localStorage.setItem('antetai_lang',l);document.documentElement.lang=l;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(T[k]&&T[k][l]){if(el.tagName==='TEXTAREA'||el.tagName==='INPUT')el.placeholder=T[k][l];else el.textContent=T[k][l]}})}
+</script>
+
+<div style="position:fixed;top:10px;right:10px;z-index:9999;display:flex;gap:4px">
+<button onclick="switchLang('en')" style="padding:4px 8px;border-radius:6px;border:1px solid rgba(0,255,65,.3);cursor:pointer;font-size:11px;font-weight:700;background:rgba(0,255,65,.15);color:var(--crt)">EN</button>
+<button onclick="switchLang('ro')" style="padding:4px 8px;border-radius:6px;border:1px solid rgba(0,255,65,.3);cursor:pointer;font-size:11px;font-weight:400;background:transparent;color:var(--muted)">RO</button>
+</div>
+
+</body>
+</html>
