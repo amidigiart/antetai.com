@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>antetai — The Anticipation Engine | See through text before it affects you</title>
-<meta name="description" content="6-layer AI engine that stamps truth on text. TVE detection + UKBE resonance + amidor verification. ScamShield, 6-pillar analysis, multi-perspective WEAC, live engine monitor.">
+<meta name="description" content="6-layer AI engine that stamps truth on text. TVE detection + UKBE resonance + amidor verification. ScamShield, 6-pillar analysis, multi-perspective WEAC.">
 <meta property="og:title" content="antetai — The Anticipation Engine">
 <meta property="og:description" content="See through text before it affects you. 6 analysis layers, resonance-verified, entropy-sealed.">
 <meta property="og:type" content="website">
@@ -270,12 +270,12 @@ footer{padding:40px 0 28px;border-top:1px solid var(--border);margin-top:60px}
   </section>
 
   <section class="section" id="monitor">
-    <h2 class="section-title" data-i18n="mon_h2">Live engine monitor</h2>
-    <p class="section-sub" data-i18n="mon_sub">Real state from the REAI engine. Kuramoto oscillators, Kalman filter, adaptive alpha/beta — live.</p>
+    <h2 class="section-title" data-i18n="mon_h2">Engine monitor — demo</h2>
+    <p class="section-sub" data-i18n="mon_sub">Illustrative animation of the signals the REAI engine tracks: Kuramoto oscillators, Kalman filter, adaptive alpha/beta. These are not live values.</p>
     <div class="monitor-section">
       <div class="monitor-head">
         <h3>REAI Engine</h3>
-        <span class="live">● LIVE</span>
+        <span class="live">● DEMO</span>
         <span style="margin-left:auto;font-size:.75rem;color:var(--crt-dim);font-family:var(--mono)">ScaleEngine O(N) · <span id="mon-n">10,000</span> oscillators</span>
       </div>
       <div class="kpis">
@@ -321,10 +321,10 @@ footer{padding:40px 0 28px;border-top:1px solid var(--border);margin-top:60px}
           <li data-i18n="pro4">Strategy identification</li>
           <li data-i18n="pro5">Batch analysis</li>
           <li data-i18n="pro6">Export (PDF/JSON)</li>
-          <li data-i18n="pro7">Live monitor access</li>
+          <li data-i18n="pro7">Engine monitor access</li>
           <li data-i18n="pro8">Priority processing</li>
         </ul>
-        <button class="btn btn-crt" id="proBuyBtn" onclick="handleProPurchase()" data-i18n="upgrade">Upgrade to Pro — €14.99/mo</button>
+        <button class="btn btn-crt" id="proBuyBtn" onclick="handleProPurchase()" data-i18n="upgrade">Pro — launching soon</button>
       </div>
     </div>
 
@@ -349,6 +349,7 @@ footer{padding:40px 0 28px;border-top:1px solid var(--border);margin-top:60px}
   <section class="section" id="chat">
     <h2 class="section-title" data-i18n="chat_h2">Stamp text now</h2>
     <p class="section-sub" data-i18n="chat_sub">Paste any text — email, article, message, contract. Get the full 6-layer stamp.</p>
+    <p class="section-sub" style="color:var(--crt)" data-i18n="chat_notice">The analysis service is being rebuilt and is offline right now. Stamping reopens soon.</p>
     <div class="chat-section">
       <div class="chat-container">
         <div class="chat-messages" id="chatMessages">
@@ -429,15 +430,19 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('cl
 
 // Chat
 const API_BASE='https://antetai-api-production.up.railway.app';
+// false until the analysis API is deployed again; then set to true
+const API_ONLINE=false;
+const OFFLINE_MSG={en:'The analysis service is being rebuilt and is offline right now. Your text was not sent anywhere. Stamping reopens soon.',ro:'Serviciul de analiză este reconstruit și acum e offline. Textul tău nu a fost trimis nicăieri. Ștampilarea revine în curând.'};
+const PRO_MSG={en:'Pro launches together with the analysis service. Write to hello@antetai.com to be notified.',ro:'Pro se lansează odată cu serviciul de analiză. Scrie la hello@antetai.com ca să fii anunțat.'};
 let busy=false;
 function addBubble(t,type,meta){const d=document.createElement('div');d.className='chat-bubble '+type;d.innerHTML=t.replace(/\n/g,'<br>');if(meta)d.innerHTML+='<div class="meta">'+meta+'</div>';document.getElementById('chatMessages').appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'})}
-async function sendChat(){if(busy)return;const inp=document.getElementById('chatInput');const msg=inp.value.trim();if(!msg)return;busy=true;inp.value='';addBubble(msg,'user');document.getElementById('chatStatus').textContent='🔏 Running 6 layers...';document.getElementById('chatSendBtn').disabled=true;try{const r=await fetch(API_BASE+'/companion/antetai/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,locale:'en'})});const d=await r.json();addBubble(d.response,'bot','🤖 AI-generated · '+d.engine+' · '+d.decision+' · '+d.latency_s+'s')}catch(e){addBubble('Connection error — API is being deployed. Contact hello@antetai.com','bot','⚠️')}finally{busy=false;document.getElementById('chatStatus').textContent='';document.getElementById('chatSendBtn').disabled=false}}
+async function sendChat(){if(busy)return;const inp=document.getElementById('chatInput');const msg=inp.value.trim();if(!msg)return;busy=true;inp.value='';addBubble(msg,'user');if(!API_ONLINE){addBubble(OFFLINE_MSG[lang]||OFFLINE_MSG.en,'bot','⚠️');busy=false;return}document.getElementById('chatStatus').textContent='🔏 Running 6 layers...';document.getElementById('chatSendBtn').disabled=true;try{const r=await fetch(API_BASE+'/companion/antetai/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,locale:'en'})});const d=await r.json();addBubble(d.response,'bot','🤖 AI-generated · '+d.engine+' · '+d.decision+' · '+d.latency_s+'s')}catch(e){addBubble('Connection error — API is being deployed. Contact hello@antetai.com','bot','⚠️')}finally{busy=false;document.getElementById('chatStatus').textContent='';document.getElementById('chatSendBtn').disabled=false}}
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}});
 
-async function handleProPurchase(){const btn=document.getElementById('proBuyBtn');btn.textContent='Redirecting...';btn.disabled=true;try{const r=await fetch(API_BASE+'/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'}});const d=await r.json();if(d.url)window.location.href=d.url;else throw 0}catch{btn.textContent='Upgrade to Pro — €14.99/mo';btn.disabled=false;alert('Payment being configured. Contact hello@antetai.com')}}
+async function handleProPurchase(){if(!API_ONLINE){alert(PRO_MSG[lang]||PRO_MSG.en);return}const btn=document.getElementById('proBuyBtn');btn.textContent='Redirecting...';btn.disabled=true;try{const r=await fetch(API_BASE+'/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'}});const d=await r.json();if(d.url)window.location.href=d.url;else throw 0}catch{btn.textContent='Upgrade to Pro — €14.99/mo';btn.disabled=false;alert('Payment being configured. Contact hello@antetai.com')}}
 
 // i18n
-const T={"tagline":{"en":"antetai stamps truth on text. 6 analysis layers detect manipulation, measure coordination via Kuramoto resonance, verify through multi-perspective consensus, and seal with entropy valve. Not just detection — anticipation.","ro":"antetai ștampilează adevărul pe text. 6 straturi de analiză detectează manipularea, măsoară coordonarea prin rezonanță Kuramoto, verifică prin consens multi-perspectivă și sigilează cu valva de entropie. Nu doar detecție — anticipare."},"hero_line1":{"en":"See through text","ro":"Vezi prin text"},"hero_line2":{"en":"before it affects you","ro":"înainte să te afecteze"},"layers_h2":{"en":"The 6 analysis layers","ro":"Cele 6 straturi de analiză"},"layers_sub":{"en":"Each layer adds a dimension previous engines cannot see alone. Together, they create the antetai stamp.","ro":"Fiecare strat adaugă o dimensiune pe care motoarele anterioare nu o văd singure. Împreună, creează ștampila antetai."},"mon_h2":{"en":"Live engine monitor","ro":"Monitor motor live"},"mon_sub":{"en":"Real state from the REAI engine. Kuramoto oscillators, Kalman filter, adaptive alpha/beta — live.","ro":"Stare reală din motorul REAI. Oscilatori Kuramoto, filtru Kalman, alpha/beta adaptiv — live."},"price_h2":{"en":"Pricing","ro":"Prețuri"},"price_sub":{"en":"Start free. Full stamp for Pro.","ro":"Începe gratuit. Ștampila completă la Pro."},"chat_h2":{"en":"Stamp text now","ro":"Ștampilează text acum"},"chat_sub":{"en":"Paste any text — email, article, message, contract. Get the full 6-layer stamp.","ro":"Lipește orice text — email, articol, mesaj, contract. Primești ștampila completă pe 6 straturi."}};
+const T={"tagline":{"en":"antetai stamps truth on text. 6 analysis layers detect manipulation, measure coordination via Kuramoto resonance, verify through multi-perspective consensus, and seal with entropy valve. Not just detection — anticipation.","ro":"antetai ștampilează adevărul pe text. 6 straturi de analiză detectează manipularea, măsoară coordonarea prin rezonanță Kuramoto, verifică prin consens multi-perspectivă și sigilează cu valva de entropie. Nu doar detecție — anticipare."},"hero_line1":{"en":"See through text","ro":"Vezi prin text"},"hero_line2":{"en":"before it affects you","ro":"înainte să te afecteze"},"layers_h2":{"en":"The 6 analysis layers","ro":"Cele 6 straturi de analiză"},"layers_sub":{"en":"Each layer adds a dimension previous engines cannot see alone. Together, they create the antetai stamp.","ro":"Fiecare strat adaugă o dimensiune pe care motoarele anterioare nu o văd singure. Împreună, creează ștampila antetai."},"mon_h2":{"en":"Engine monitor — demo","ro":"Monitor motor — demonstrație"},"chat_notice":{"en":"The analysis service is being rebuilt and is offline right now. Stamping reopens soon.","ro":"Serviciul de analiză este reconstruit și acum e offline. Ștampilarea revine în curând."},"upgrade":{"en":"Pro — launching soon","ro":"Pro — în curând"},"pro7":{"en":"Engine monitor access","ro":"Acces la monitorul motorului"},"mon_sub":{"en":"Illustrative animation of the signals the REAI engine tracks: Kuramoto oscillators, Kalman filter, adaptive alpha/beta. These are not live values.","ro":"Animație ilustrativă a semnalelor urmărite de motorul REAI: oscilatori Kuramoto, filtru Kalman, alpha/beta adaptiv. Nu sunt valori în timp real."},"price_h2":{"en":"Pricing","ro":"Prețuri"},"price_sub":{"en":"Start free. Full stamp for Pro.","ro":"Începe gratuit. Ștampila completă la Pro."},"chat_h2":{"en":"Stamp text now","ro":"Ștampilează text acum"},"chat_sub":{"en":"Paste any text — email, article, message, contract. Get the full 6-layer stamp.","ro":"Lipește orice text — email, articol, mesaj, contract. Primești ștampila completă pe 6 straturi."}};
 let lang=localStorage.getItem('antetai_lang')||'en';
 function switchLang(l){lang=l;localStorage.setItem('antetai_lang',l);document.documentElement.lang=l;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(T[k]&&T[k][l]){if(el.tagName==='TEXTAREA'||el.tagName==='INPUT')el.placeholder=T[k][l];else el.textContent=T[k][l]}})}
 </script>
